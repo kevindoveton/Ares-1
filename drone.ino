@@ -30,19 +30,17 @@ void loop()
 {
 
 	// Get Pulse Width of all Channels
-	//TODO: fix. This is a bit dodgy
+	// TODO: fix. This is a bit dodgy
 	// ch2 = getCurrentReading(20, ch2);
 	// ch1 = getCurrentReading(19, ch1);
 	// ch4 = getCurrentReading(22, ch4);
 	// ch3 = getCurrentReading(21, ch3);
-	//  ch5 = getCurrentReading(5, ch5);
-	//  ch6 = getCurrentReading(6, ch6);
+	// ch5 = getCurrentReading(5, ch5);
+	// ch6 = getCurrentReading(6, ch6);
 	ch1 = receiver.readYaw();
 	ch2 = receiver.readPitch();
 	ch3 = receiver.readThrottle();
 	ch4 = receiver.readRoll();
-
-
 
 	long rcthr, rcyaw, rcpit, rcroll;   // Variables to store rc input
 	rcthr = ch3;
@@ -52,15 +50,12 @@ void loop()
 
 
 	//seems to be 1300 - 1700
-	//Serial.println("Yaw-chl 1:\tPitch-ch2:\tThrott-ch3:\tRoll-ch4:\t");
-	String outputString = String(rcthr, DEC) + "\t\t" + String(rcyaw, DEC) + "\t\t" + String(rcpit, DEC) + "\t\t" + String(rcroll, DEC);
-	Serial.print(outputString);
-	Serial.print("\n");
-
-
-
-
-
+	#ifdef DEBUG
+		//Serial.println("Yaw-chl 1:\tPitch-ch2:\tThrott-ch3:\tRoll-ch4:\t");
+		String outputString = String(rcthr, DEC) + "\t\t" + String(rcyaw, DEC) + "\t\t" + String(rcpit, DEC) + "\t\t" + String(rcroll, DEC);
+		Serial.print(outputString);
+		Serial.print("\n");
+	#endif
 
 
 	//Test the esc's

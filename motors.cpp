@@ -9,6 +9,5 @@ void Motors :: init()
 
 	#ifdef DEBUG
 		Serial.println("Motors :: init()");
-		
 	#endif
 }
