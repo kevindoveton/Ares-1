@@ -9,7 +9,13 @@
 class Receiver {
 	public:
 		void init();
-		
+		unsigned long readYaw();
+		unsigned long readPitch();
+		unsigned long readThrottle();
+		unsigned long readRoll();
+		unsigned long readRSwitch();
+		unsigned long readLSwitch();
+
 	private:
 		const int yawPin = 2;
 		const int pitchPin = 4;
@@ -17,4 +23,6 @@ class Receiver {
 		const int rollPin = 6;
 		const int rSwitchPin = 7;
 		const int lSwitchPin = 8;
+
+		unsigned long readPulse(int pin, int signal, unsigned long timeout);
 }

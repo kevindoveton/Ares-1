@@ -1,8 +1,6 @@
 // Ares 1
 // 2015 Kevin Doveton // Lewis Daly
 
-#include <Adafruit_10DOF.h>
-
 #include "receiver.h"
 #include "motors.h"
 
@@ -11,12 +9,11 @@
 Receiver receiver;
 Motors motors;
 
-
 int ch1 = 100, ch2 = 100, ch3 = 100, ch4 = 100, ch5 = 100, ch6 = 100;
 
 void setup() 
 {
-	
+
 	receiver.init();
 
 	motors.init();
@@ -34,12 +31,18 @@ void loop()
 
 	// Get Pulse Width of all Channels
 	//TODO: fix. This is a bit dodgy
-	ch2 = getCurrentReading(20, ch2);
-	ch1 = getCurrentReading(19, ch1);
-	ch4 = getCurrentReading(22, ch4);
-	ch3 = getCurrentReading(21, ch3);
+	// ch2 = getCurrentReading(20, ch2);
+	// ch1 = getCurrentReading(19, ch1);
+	// ch4 = getCurrentReading(22, ch4);
+	// ch3 = getCurrentReading(21, ch3);
 	//  ch5 = getCurrentReading(5, ch5);
 	//  ch6 = getCurrentReading(6, ch6);
+	ch1 = receiver.readYaw();
+	ch2 = receiver.readPitch();
+	ch3 = receiver.readThrottle();
+	ch4 = receiver.readRoll();
+
+
 
 	long rcthr, rcyaw, rcpit, rcroll;   // Variables to store rc input
 	rcthr = ch3;
