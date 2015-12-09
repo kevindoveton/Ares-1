@@ -1,8 +1,10 @@
 #include <Servo.h>
+#include <Arduino.h>
 
 class Motors {
 	public:
 		void init();
+		void setAllSpeed();
 
 	private:
 		const int esc1Pin = 3;
@@ -14,4 +16,4 @@ class Motors {
 		Servo esc2;
 		Servo esc3;
 		Servo esc4;
-}
+};

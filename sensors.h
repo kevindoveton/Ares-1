@@ -1,3 +1,4 @@
+#include <Arduino.h>
 
 class Sensors {
 	public:
@@ -5,4 +6,4 @@ class Sensors {
 		
 	private:
 		
-}
+};

@@ -3,8 +3,9 @@
 
 #include "receiver.h"
 #include "motors.h"
+#include "sensors.h"
 
-#define DEBUG;
+//#define DEBUG
 
 Receiver receiver;
 Motors motors;
@@ -15,7 +16,6 @@ void setup()
 {
 
 	receiver.init();
-
 	motors.init();
 
 
@@ -31,12 +31,12 @@ void loop()
 
 	// Get Pulse Width of all Channels
 	// TODO: fix. This is a bit dodgy
-	// ch2 = getCurrentReading(20, ch2);
-	// ch1 = getCurrentReading(19, ch1);
-	// ch4 = getCurrentReading(22, ch4);
-	// ch3 = getCurrentReading(21, ch3);
-	// ch5 = getCurrentReading(5, ch5);
-	// ch6 = getCurrentReading(6, ch6);
+//	 ch2 = getCurrentReading(20, ch2);
+//	 ch1 = getCurrentReading(19, ch1);
+//	 ch4 = getCurrentReading(22, ch4);
+//	 ch3 = getCurrentReading(21, ch3);
+//	 ch5 = getCurrentReading(5, ch5);
+//	 ch6 = getCurrentReading(6, ch6);
 	ch1 = receiver.readYaw();
 	ch2 = receiver.readPitch();
 	ch3 = receiver.readThrottle();
@@ -59,19 +59,19 @@ void loop()
 
 
 	//Test the esc's
-	int throttle = map(ch3, 1300, 2000, 0, 179);
-	esc1.write(throttle);
+	//int throttle = map(ch3, 1300, 2000, 0, 179);
+	//esc1.write(throttle);
 
 	// Delay to Make it Readable
 	//  delay(500);
 }
 
-int getCurrentReading(int channelNumber, int lastValue) 
-{
-	int currentReading = pulseIn(channelNumber, HIGH, 25000);
-	if (currentReading != 0) {
-		return currentReading;
-	}
-	return lastValue; 
-}
+//int getCurrentReading(int channelNumber, int lastValue) 
+//{
+//	int currentReading = pulseIn(channelNumber, HIGH, 25000);
+//	if (currentReading != 0) {
+//		return currentReading;
+//	}
+//	return lastValue; 
+//}
 

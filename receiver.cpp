@@ -18,37 +18,37 @@ void Receiver :: init()
 
 unsigned long Receiver :: readYaw()
 {
-	return readPulse(yawPin, HIGH, 25000)
+	return readPulse(yawPin, HIGH, 5000);
 }
 
 
 unsigned long Receiver :: readPitch()
 {
-	return readPulse(pitchPin, HIGH, 25000)
+	return readPulse(pitchPin, HIGH, 5000);
 }
 
 
 unsigned long Receiver :: readThrottle()
 {
-	return readPulse(throttlePin, HIGH, 25000)
+	return readPulse(throttlePin, HIGH, 5000);
 }
 
 
 unsigned long Receiver :: readRoll()
 {
-	return readPulse(rollPin, HIGH, 25000)
+	return readPulse(rollPin, HIGH, 5000);
 }
 
 
 unsigned long Receiver :: readRSwitch()
 {
-	return readPulse(rSwitchPin, HIGH, 25000)
+	return readPulse(rSwitchPin, HIGH, 5000);
 }
 
 
 unsigned long Receiver :: readLSwitch()
 {
-	return readPulse(lSwitchPin, HIGH, 25000)
+	return readPulse(lSwitchPin, HIGH, 5000);
 }
 
 

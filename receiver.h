@@ -6,6 +6,8 @@
 // 5 R 
 // 6 L
 
+#include <Arduino.h>
+
 class Receiver {
 	public:
 		void init();
@@ -25,4 +27,4 @@ class Receiver {
 		const int lSwitchPin = 8;
 
 		unsigned long readPulse(int pin, int signal, unsigned long timeout);
-}
+};

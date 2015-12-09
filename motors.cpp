@@ -11,3 +11,12 @@ void Motors :: init()
 		Serial.println("Motors :: init()");
 	#endif
 }
+
+void Motors :: setAllSpeed(int speed)
+{
+	speed = speed/100 * 180
+	esc1.write(speed);
+	esc2.write(speed);
+	esc3.write(speed);
+	esc4.write(speed);
+}

@@ -1,4 +1,4 @@
-#include "receiver.h"
+#include "sensors.h"
 
 void Sensors :: init()
 {
