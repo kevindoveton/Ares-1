@@ -14,7 +14,7 @@ void Motors :: init()
 
 void Motors :: setAllSpeed(int speed)
 {
-	speed = speed/100 * 180
+	speed = speed/100 * 180;
 	esc1.write(speed);
 	esc2.write(speed);
 	esc3.write(speed);

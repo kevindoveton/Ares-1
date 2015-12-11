@@ -11,9 +11,13 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 87.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
 			[
 				"instal",
 				"Package Control: Install Package"
@@ -27,7 +31,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 449.0
+		"width": 384.0
 	},
 	"console":
 	{
@@ -44,6 +48,12 @@
 	},
 	"file_history":
 	[
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/motors.h",
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/motors.cpp",
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/drone.ino",
+		"/Users/kevindoveton/Library/Application Support/Sublime Text 2/Packages/Origami/Default (OSX).sublime-keymap",
+		"/Users/kevindoveton/Library/Application Support/Sublime Text 2/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/drone.sublime-project",
 		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/receiver.cpp"
 	],
 	"find":

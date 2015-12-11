@@ -10,13 +10,14 @@
 
 Receiver receiver;
 Motors motors;
+Sensors sensors;
 
 int ch1 = 100, ch2 = 100, ch3 = 100, ch4 = 100, ch5 = 100, ch6 = 100;
 
 void setup() 
 {
-
 	receiver.init();
+  sensors.init();
 	motors.init();
 
 
@@ -48,6 +49,10 @@ void loop()
 	rcyaw = map(ch1, 1200, 2000, -150, 150);
 	rcpit = map(ch2, 1200, 2000, -45, 45);
 	rcroll = map(ch4, 1200, 2000, -45, 45);
+
+//  float roll,pitch,yaw;  
+//  RTVector3 sensorVector = sensors.readSensors(); //Not sure how to convert to euler...
+//  roll = sensorVector.x();
 
 
 	//seems to be 1300 - 1700
