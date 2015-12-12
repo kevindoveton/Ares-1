@@ -48,13 +48,13 @@
 	},
 	"file_history":
 	[
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/drone.sublime-project",
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/receiver.cpp",
+		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/drone.ino",
 		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/motors.h",
 		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/motors.cpp",
-		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/drone.ino",
 		"/Users/kevindoveton/Library/Application Support/Sublime Text 2/Packages/Origami/Default (OSX).sublime-keymap",
-		"/Users/kevindoveton/Library/Application Support/Sublime Text 2/Packages/User/Default (OSX).sublime-keymap",
-		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/drone.sublime-project",
-		"/Users/kevindoveton/Google Drive/DroneProject/ares1/drone/receiver.cpp"
+		"/Users/kevindoveton/Library/Application Support/Sublime Text 2/Packages/User/Default (OSX).sublime-keymap"
 	],
 	"find":
 	{

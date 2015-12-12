@@ -7,16 +7,14 @@
 void Sensors :: init()
 {
 
-	#ifdef DEBUG
-		Serial.println("Sensors :: init()");
+    #ifdef DEBUG
+        Serial.println("Sensors :: init()");
 	#endif
 
-	int errcode;
+    int errcode;
 
-   
-
-	Serial.begin(9600);
-	Wire.begin();
+    Serial.begin(9600);
+    Wire.begin();
     imu = RTIMU::createIMU(&settings);                        // create the imu object
     pressure = RTPressure::createPressure(&settings);         // create the pressure sensor
     
@@ -65,6 +63,46 @@ RTVector3 Sensors :: readSensors()
     float latestPressure;
     float latestTemperature;
     int loopCount = 1;
+
+    while (imu->IMURead()) {                                // get the latest data if ready yet
+        // this flushes remaining data in case we are falling behind
+        if (++loopCount >= 10)
+            continue;
+
+        fusion.newIMUData(imu->getGyro(), imu->getAccel(), imu->getCompass(), imu->getTimestamp());
+        sampleCount++;
+        if ((delta = now - lastRate) >= 1000) {
+            Serial.print("Sample rate: "); Serial.print(sampleCount);
+            if (imu->IMUGyroBiasValid())
+                Serial.println(", gyro bias valid");
+            else
+                Serial.println(", calculating gyro bias");
+
+            sampleCount = 0;
+            lastRate = now;
+        }
+        if ((now - lastDisplay) >= DISPLAY_INTERVAL) {
+            lastDisplay = now;
+            // RTMath::displayRollPitchYaw("Pose:", (RTVector3&)fusion.getFusionPose()); // fused output
+            return (RTVector3&)fusion.getFusionPose();
+            
+            // if (pressure->pressureRead(latestPressure, latestTemperature)) {
+            //     Serial.print(", pressure: "); Serial.print(latestPressure);
+            //     Serial.print(", temperature: "); Serial.print(latestTemperature);
+            // }
+            // Serial.println();
+        }
+    }
+}
+
+
+RTVector3 Sensors :: readGyro() 
+{
+  unsigned long now = millis();
+  unsigned long delta;
+  float latestPressure;
+  float latestTemperature;
+  int loopCount = 1;
   
     while (imu->IMURead()) {                                // get the latest data if ready yet
         // this flushes remaining data in case we are falling behind
@@ -79,7 +117,7 @@ RTVector3 Sensors :: readSensors()
                 Serial.println(", gyro bias valid");
             else
                 Serial.println(", calculating gyro bias");
-        
+
             sampleCount = 0;
             lastRate = now;
         }
@@ -89,14 +127,14 @@ RTVector3 Sensors :: readSensors()
 //          RTMath::display("Accel:", (RTVector3&)imu->getAccel());              // accel data
 //          RTMath::display("Mag:", (RTVector3&)imu->getCompass());              // compass data
             // RTMath::displayRollPitchYaw("Pose:", (RTVector3&)fusion.getFusionPose()); // fused output
-            return (RTVector3&)fusion.getFusionPose();
-            
+            return (RTVector3&)imu->getGyro();
+
             // if (pressure->pressureRead(latestPressure, latestTemperature)) {
             //     Serial.print(", pressure: "); Serial.print(latestPressure);
             //     Serial.print(", temperature: "); Serial.print(latestTemperature);
             // }
             // Serial.println();
-        }
-    }
-
 }
+}
+}
+

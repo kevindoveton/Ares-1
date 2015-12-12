@@ -12,7 +12,7 @@ void Motors :: init()
 	#endif
 }
 
-void Motors :: setAllSpeed(int speed)
+void Motors :: setAllSpeed(float speed)
 {
 	speed = speed/100 * 180;
 	esc1.write(speed);
@@ -20,3 +20,12 @@ void Motors :: setAllSpeed(int speed)
 	esc3.write(speed);
 	esc4.write(speed);
 }
+
+void Motors :: setSpeeds(float FL, float FR, float BR, float BL)
+{
+  esc1.write(FL);
+  esc2.write(FR);
+  esc3.write(BR);
+  esc4.write(BL); 
+}
+

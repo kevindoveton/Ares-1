@@ -16,13 +16,10 @@
 #include <RTPressureDefs.h>
 #include <RTPressureLPS25H.h>
 #include <RTPressureMS5611.h>
-
 #include <Arduino.h>
 #include <Wire.h>
 
 #define RTARDULINK_MODE
-
-// #include <EEPROM.h>
 
 
 //Sensor Library
@@ -30,12 +27,13 @@
 
 
 class Sensors {
-	public:
-		void init();
-		//Read RTMath.h for the RTQuaternion def, basically: (scalar, x, y, z).
-		RTVector3 readSensors();
+public:
+  void init();
+    //Read RTMath.h for the RTVector3 def, basically: (scalar, x, y, z).
+    RTVector3 readSensors();
+    RTVector3 readGyro();
 
-  private:
+private:
     //Define the sensor types in Arduino Libraries - RTIMU Constants
     RTIMU *imu;                                           // the IMU object
     RTPressure *pressure;                                 // the pressure object
