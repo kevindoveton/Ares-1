@@ -25,7 +25,13 @@ PID pids[6];
 #define wrap_180(x) (x < -180 ? x+360 : (x > 180 ? x - 360: x))
 
 void setup() 
-{
+{ 
+	// This must be first
+	// Start Serial Monitor
+	//#ifdef DEBUG
+		Serial.begin(9600);
+	//#endif
+
 	receiver.init();
 	sensors.init();
 	motors.init();
@@ -47,10 +53,7 @@ void setup()
 	pids[PID_YAW_STAB].kP(10);
 
 
-	// Start Serial Monitor
-	#ifdef DEBUG
-		Serial.begin(9600);
-	#endif
+	
 
 }
 
@@ -77,9 +80,11 @@ void loop()
 	pitch = sensorVector.y();
 	yaw = sensorVector.z();
 
+	
+
 	RTVector3 gyroVector = sensors.readGyro();
 	float gyroPitch = gyroVector.y(), gyroRoll = gyroVector.x(), gyroYaw = gyroVector.z(); //convert to deg?
-
+Serial.println(gyroVector.y());
 
 	if(rcthr > 1170) 
 	{   // *** MINIMUM THROTTLE TO DO CORRECTIONS MAKE THIS 20pts ABOVE YOUR MIN THR STICK **/
