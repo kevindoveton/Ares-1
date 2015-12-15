@@ -18,7 +18,7 @@
 
 class Sensors {
 public:
-	void init();
+	bool init();
 	//Read RTMath.h for the RTVector3 def, basically: (scalar, x, y, z).
 	RTVector3 readSensors();
 	RTVector3 readGyro();

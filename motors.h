@@ -4,8 +4,8 @@
 class Motors {
 	public:
 		void init();
-		void setAllSpeed(float speeds);
-    void setSpeeds(float FL, float FR, float BR, float BL);
+		void setSpeeds(float FL, float FR, float BR, float BL);
+   void setAllSpeeds(float speed);
 
 	private:
 		const int esc1Pin = 3;

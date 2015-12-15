@@ -15,6 +15,54 @@ void Receiver :: init()
 	#endif
 }
 
+void Receiver :: callibrate()
+{
+	#if DEBUG
+		Serial.println("Started callibration");
+	#endif
+
+	unsigned long start = millis();
+
+	while (millis() - start <= 5000)
+	{
+		if (int currentYaw = readYaw() < minYaw)
+		{
+			minYaw = currentYaw;
+		}
+		else if (currentYaw > maxYaw)
+		{	
+			maxYaw = currentYaw;
+		}
+
+		if (int currentPitch = readPitch() < minPitch)
+		{
+			minPitch = currentPitch;
+		}
+		else if (currentPitch > maxPitch)
+		{	
+			maxPitch = currentPitch;
+		}
+
+		if (int currentThrottle = readThrottle() < minThrottle)
+		{	
+			minThrottle = currentThrottle;
+		}
+		else if (currentThrottle > maxThrottle)
+		{	
+			maxThrottle = currentThrottle;
+		}
+
+		if (int currentRoll = readRoll() < minRoll)
+		{	
+			minRoll = currentRoll;
+		}
+		else if (currentRoll > maxRoll)
+		{	
+			maxRoll = currentRoll;
+		}
+
+	}
+}
 
 unsigned long Receiver :: readYaw()
 {

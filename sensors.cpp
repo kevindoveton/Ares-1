@@ -4,7 +4,7 @@
 
 
 
-void Sensors :: init()
+bool Sensors :: init()
 {
 
 	#ifdef DEBUG
@@ -14,11 +14,14 @@ void Sensors :: init()
 	Wire.begin();
 
 	// Compass
-	compass.init();
+	if (!compass.init())
+    return false;
 	compass.enableDefault();
 
 	// Gyro
-	gyro.init();
+	if (!gyro.init())
+    return false;
+    
 	gyro.enableDefault();
 	
 	lastDisplay = lastRate = millis();
@@ -36,6 +39,7 @@ void Sensors :: init()
 	fusion.setGyroEnable(true);
 	fusion.setAccelEnable(true);
 	fusion.setCompassEnable(true);
+  return true;
 }
 
 //Not sure how or if this will work...
@@ -47,8 +51,10 @@ RTVector3 Sensors :: readSensors()
 	float latestTemperature;
 	int loopCount = 1;
 
-	while (1) { // imu->read()
-		
+	//while (1) { // imu->read()
+    #if DEBUG
+		  Serial.println("readSensors()");
+    #endif
 		RTVector3 _comp;
 		RTVector3 _acel;
 		RTVector3 _gyro;
@@ -56,8 +62,8 @@ RTVector3 Sensors :: readSensors()
 		readGyro(_gyro);
 		readCompass(_acel, _comp);
 
-		if (++loopCount >= 10)
-			continue;
+		//if (++loopCount >= 10)
+			//continue;
 
 		fusion.newIMUData(_gyro, _acel, _comp, millis()); //gyro, acel, comp, timestamp
 
@@ -74,7 +80,7 @@ RTVector3 Sensors :: readSensors()
 			// RTMath::displayRollPitchYaw("Pose:", (RTVector3&)fusion.getFusionPose()); // fused output
 			return (RTVector3&)fusion.getFusionPose();
 		}
-	}
+	//}
 }
 
 RTVector3 Sensors :: readGyro()

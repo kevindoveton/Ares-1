@@ -30,11 +30,14 @@ void setup()
 	// Start Serial Monitor
 	//#ifdef DEBUG
 		Serial.begin(9600);
+		Serial.println("started serial");
 	//#endif
 
 	receiver.init();
 	sensors.init();
 	motors.init();
+
+  receiver.callibrate();
 
 	pids[PID_PITCH_RATE].kP(0.7);
 	//  pids[PID_PITCH_RATE].kI(1);
@@ -84,7 +87,7 @@ void loop()
 
 	RTVector3 gyroVector = sensors.readGyro();
 	float gyroPitch = gyroVector.y(), gyroRoll = gyroVector.x(), gyroYaw = gyroVector.z(); //convert to deg?
-Serial.println(gyroVector.y());
+Serial.println(roll);
 
 	if(rcthr > 1170) 
 	{   // *** MINIMUM THROTTLE TO DO CORRECTIONS MAKE THIS 20pts ABOVE YOUR MIN THR STICK **/
@@ -122,7 +125,7 @@ Serial.println(gyroVector.y());
 	} 
 	else 
 	{  // MOTORS OFF
-		motors.setAllSpeed(1000); //not sure if 1000 is correct.
+		motors.setAllSpeeds(1000); //not sure if 1000 is correct.
 
 		// reset yaw target so we maintain this on takeoff
 		yaw_target = yaw;
@@ -140,22 +143,4 @@ Serial.println(gyroVector.y());
 		Serial.print(outputString);
 		Serial.print("\n");
 	#endif
-
-
-	//Test the esc's
-	//int throttle = map(ch3, 1300, 2000, 0, 179);
-	//esc1.write(throttle);
-
-	// Delay to Make it Readable
-	//  delay(500);
 }
-
-//int getCurrentReading(int channelNumber, int lastValue) 
-//{
-//	int currentReading = pulseIn(channelNumber, HIGH, 25000);
-//	if (currentReading != 0) {
-//		return currentReading;
-//	}
-//	return lastValue; 
-//}
-

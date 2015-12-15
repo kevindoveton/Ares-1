@@ -11,12 +11,19 @@
 class Receiver {
 	public:
 		void init();
+		void callibrate();
+
 		unsigned long readYaw();
 		unsigned long readPitch();
 		unsigned long readThrottle();
 		unsigned long readRoll();
 		unsigned long readRSwitch();
 		unsigned long readLSwitch();
+
+		int minYaw, maxYaw;
+		int minThrottle, maxThrottle;
+		int minPitch, maxPitch;
+		int minRoll, maxRoll;
 
 	private:
 		const int yawPin = 2;
