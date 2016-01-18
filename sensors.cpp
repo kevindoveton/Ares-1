@@ -17,6 +17,8 @@ bool Sensors :: init()
 	if (!compass.init())
     return false;
 	compass.enableDefault();
+  compass.m_min = (LSM303::vector<int16_t>){-3456, -4294, -3141};
+  compass.m_max = (LSM303::vector<int16_t>){+3333, +2685, +3502};
 
 	// Gyro
 	if (!gyro.init())
@@ -31,7 +33,7 @@ bool Sensors :: init()
 	// 0 means that only gyros are used, 1 means that only accels/compass are used
 	// In-between gives the fusion mix.
 	
-	fusion.setSlerpPower(0.02);
+	fusion.setSlerpPower(slerp);
 
 	// use of sensors in the fusion algorithm can be controlled here
 	// change any of these to false to disable that sensor
@@ -44,7 +46,7 @@ bool Sensors :: init()
 
 //Not sure how or if this will work...
 RTVector3 Sensors :: readSensors() 
-{
+{/*
 	unsigned long now = millis();
 	unsigned long delta;
 	float latestPressure;
@@ -69,7 +71,7 @@ RTVector3 Sensors :: readSensors()
 
 		sampleCount++;
 		if ((delta = now - lastRate) >= 1000) {
-			Serial.print("Sample rate: "); Serial.print(sampleCount);
+//			Serial.print("Sample rate: "); Serial.print(sampleCount);
 			
 			sampleCount = 0;
 			lastRate = now;
@@ -79,8 +81,26 @@ RTVector3 Sensors :: readSensors()
 			lastDisplay = now;
 			// RTMath::displayRollPitchYaw("Pose:", (RTVector3&)fusion.getFusionPose()); // fused output
 			return (RTVector3&)fusion.getFusionPose();
-		}
-	//}
+		}*/
+
+   //this runs in 4ms on the MEGA 2560
+    G_Dt = (micros() - timer)/1000000.0;
+    timer=micros();
+    compass.read();
+    floatMagX = ((float)compass.m.x - compassXMin) * inverseXRange - 1.0;
+    floatMagY = ((float)compass.m.y - compassYMin) * inverseYRange - 1.0;
+    floatMagZ = ((float)compass.m.z - compassZMin) * inverseZRange - 1.0;
+    floatAccX = (float) compass.a.x;
+    floatAccY = (float) compass.a.y;
+    floatAccZ = (float) compass.a.z;
+    Smoothing(&floatAccX,&smoothAccX);
+    Smoothing(&floatAccY,&smoothAccY);
+    Smoothing(&floatAccZ,&smoothAccZ);
+    accToFilterX = smoothAccX;
+    accToFilterY = smoothAccY;
+    accToFilterZ = smoothAccZ;
+    gyro.read();
+    AHRSupdate(&G_Dt);
 }
 
 RTVector3 Sensors :: readGyro()
@@ -127,47 +147,4 @@ void Sensors :: readCompass(RTVector3& acel, RTVector3& comp)
 	comp.setZ(compass.m.z);
 }
 
-
-/*
-RTVector3 Sensors :: readGyro() 
-{
-  unsigned long now = millis();
-  unsigned long delta;
-  float latestPressure;
-  float latestTemperature;
-  int loopCount = 1;
-  
-	while (imu->IMURead()) {                                // get the latest data if ready yet
-		// this flushes remaining data in case we are falling behind
-		if (++loopCount >= 10)
-			continue;
-
-		fusion.newIMUData(imu->getGyro(), imu->getAccel(), imu->getCompass(), imu->getTimestamp());
-		sampleCount++;
-		if ((delta = now - lastRate) >= 1000) {
-			Serial.print("Sample rate: "); Serial.print(sampleCount);
-			if (imu->IMUGyroBiasValid())
-				Serial.println(", gyro bias valid");
-			else
-				Serial.println(", calculating gyro bias");
-
-			sampleCount = 0;
-			lastRate = now;
-		}
-		if ((now - lastDisplay) >= DISPLAY_INTERVAL) {
-			lastDisplay = now;
-//          RTMath::display("Gyro:", (RTVector3&)imu->getGyro());                // gyro data
-//          RTMath::display("Accel:", (RTVector3&)imu->getAccel());              // accel data
-//          RTMath::display("Mag:", (RTVector3&)imu->getCompass());              // compass data
-			// RTMath::displayRollPitchYaw("Pose:", (RTVector3&)fusion.getFusionPose()); // fused output
-			return (RTVector3&)imu->getGyro();
-
-			// if (pressure->pressureRead(latestPressure, latestTemperature)) {
-			//     Serial.print(", pressure: "); Serial.print(latestPressure);
-			//     Serial.print(", temperature: "); Serial.print(latestTemperature);
-			// }
-			// Serial.println();
-}
-}
-}*/
 

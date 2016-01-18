@@ -3,15 +3,15 @@
 
 class Motors {
 	public:
-		void init();
+		bool init();
 		void setSpeeds(float FL, float FR, float BR, float BL);
    void setAllSpeeds(float speed);
 
 	private:
 		const int esc1Pin = 3;
-		const int esc2Pin = 9;
-		const int esc3Pin = 10;
-		const int esc4Pin = 11;	
+		const int esc2Pin = 5;
+		const int esc3Pin = 6;
+		const int esc4Pin = 9;	
 
 		Servo esc1;
 		Servo esc2;

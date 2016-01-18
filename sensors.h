@@ -31,6 +31,11 @@ private:
 	LSM303 compass;
 	L3G gyro;
 
+  // Slerp power controls the fusion and can be between 0 and 1
+  // 0 means that only gyros are used, 1 means that only accels/compass are used
+  // In-between gives the fusion mix.
+  const float slerp = 0.9;
+
 	void readGyro(RTVector3& gyr);
 	void readCompass(RTVector3& acel, RTVector3& comp);
 

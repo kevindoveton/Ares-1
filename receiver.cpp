@@ -1,6 +1,6 @@
 #include "receiver.h"
 
-void Receiver :: init()
+bool Receiver :: init()
 {
 	pinMode(yawPin, INPUT);
 	pinMode(pitchPin, INPUT);
@@ -11,13 +11,15 @@ void Receiver :: init()
 
 	#ifdef DEBUG
 		Serial.println("Receiver :: init()");
-		Serial.println("Pins: \n Yaw Pin: " + string(yawPin) + ", Pitch Pin: " + string(pitchPin) + ", Throttle Pin: " + string(throttlePin) + ", Roll Pin: " + string(rollPin) + ", Right Switch Pin: " + string(rSwitchPin) + ", Left Switch Pin: " + string(lSwitchPin));
+		Serial.println("Pins: \n Yaw Pin: " + String(yawPin) + ", Pitch Pin: " + String(pitchPin) + ", Throttle Pin: " + String(throttlePin) + ", Roll Pin: " + String(rollPin) + ", Right Switch Pin: " + String(rSwitchPin) + ", Left Switch Pin: " + String(lSwitchPin));
 	#endif
+
+  return true;
 }
 
 void Receiver :: callibrate()
 {
-	#if DEBUG
+	#ifdef DEBUG
 		Serial.println("Started callibration");
 	#endif
 
@@ -66,25 +68,25 @@ void Receiver :: callibrate()
 
 unsigned long Receiver :: readYaw()
 {
-	return readPulse(yawPin, HIGH, 5000);
+	return readPulse(yawPin, HIGH, 25000);
 }
 
 
 unsigned long Receiver :: readPitch()
 {
-	return readPulse(pitchPin, HIGH, 5000);
+	return readPulse(pitchPin, HIGH, 25000);
 }
 
 
 unsigned long Receiver :: readThrottle()
 {
-	return readPulse(throttlePin, HIGH, 5000);
+	return readPulse(throttlePin, HIGH, 25000);
 }
 
 
 unsigned long Receiver :: readRoll()
 {
-	return readPulse(rollPin, HIGH, 5000);
+	return readPulse(rollPin, HIGH, 25000);
 }
 
 

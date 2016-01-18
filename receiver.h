@@ -10,7 +10,7 @@
 
 class Receiver {
 	public:
-		void init();
+		bool init();
 		void callibrate();
 
 		unsigned long readYaw();
@@ -28,10 +28,10 @@ class Receiver {
 	private:
 		const int yawPin = 2;
 		const int pitchPin = 4;
-		const int throttlePin = 5;
-		const int rollPin = 6;
-		const int rSwitchPin = 7;
-		const int lSwitchPin = 8;
+		const int throttlePin = 7;
+		const int rollPin = 8;
+		const int rSwitchPin = A0;
+		const int lSwitchPin = A1;
 
 		unsigned long readPulse(int pin, int signal, unsigned long timeout);
 };

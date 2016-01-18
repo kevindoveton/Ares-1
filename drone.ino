@@ -24,20 +24,30 @@ PID pids[6];
 
 #define wrap_180(x) (x < -180 ? x+360 : (x > 180 ? x - 360: x))
 
+const float pi = 3.1415927;
+const float radConst = 57.2957795131;
 void setup() 
 { 
 	// This must be first
 	// Start Serial Monitor
-	//#ifdef DEBUG
+	#ifdef DEBUG
 		Serial.begin(9600);
 		Serial.println("started serial");
-	//#endif
+	#endif
+  Serial.begin(9600);
+    Serial.println("started serial");
+  
+	if (!receiver.init())
+    Serial.println("receiver failed");
 
-	receiver.init();
-	sensors.init();
-	motors.init();
+  if (!sensors.init())
+    Serial.println("Sensors failed");
+	
+	if (!motors.init())
+    Serial.println("Motors failed");
 
-  receiver.callibrate();
+  motors.setAllSpeeds(0);
+  //receiver.callibrate();
 
 	pids[PID_PITCH_RATE].kP(0.7);
 	//  pids[PID_PITCH_RATE].kI(1);
@@ -54,12 +64,10 @@ void setup()
 	pids[PID_PITCH_STAB].kP(4.5);
 	pids[PID_ROLL_STAB].kP(4.5);
 	pids[PID_YAW_STAB].kP(10);
-
-
-	
-
 }
 
+int rev = 0;
+ 
 void loop() 
 {
 	static float yaw_target = 0;  
@@ -70,11 +78,15 @@ void loop()
 	ch3 = receiver.readThrottle();
 	ch4 = receiver.readRoll();
 
+
+  
 	long rcthr, rcyaw, rcpit, rcroll;   // Variables to store rc input
 	rcthr = ch3;
 	rcyaw = map(ch1, 1200, 2000, -150, 150);
 	rcpit = map(ch2, 1200, 2000, -45, 45);
 	rcroll = map(ch4, 1200, 2000, -45, 45);
+
+ 
 
 	float roll,pitch,yaw;  
 	RTVector3 sensorVector = sensors.readSensors(); //Not sure how to convert to euler...
@@ -82,50 +94,53 @@ void loop()
 	roll = sensorVector.x();
 	pitch = sensorVector.y();
 	yaw = sensorVector.z();
-
+//  motors.setAllSpeeds(rcthr);
+//  Serial.println("Pitch " + String(pitch) + "  Roll" + String(roll) + "  Yaw " + String(yaw));
 	
 
 	RTVector3 gyroVector = sensors.readGyro();
 	float gyroPitch = gyroVector.y(), gyroRoll = gyroVector.x(), gyroYaw = gyroVector.z(); //convert to deg?
-Serial.println(roll);
+ 
 
-	if(rcthr > 1170) 
-	{   // *** MINIMUM THROTTLE TO DO CORRECTIONS MAKE THIS 20pts ABOVE YOUR MIN THR STICK **/
-		
-		// Stablise PIDS
-		float pitch_stab_output = constrain(pids[PID_PITCH_STAB].get_pid((float)rcpit - pitch, 1), -250, 250); 
-		float roll_stab_output = constrain(pids[PID_ROLL_STAB].get_pid((float)rcroll - roll, 1), -250, 250);
-		float yaw_stab_output = constrain(pids[PID_YAW_STAB].get_pid(wrap_180(yaw_target - yaw), 1), -360, 360);
+ 
+  //Serial.println("Pitch " + String(gyroPitch) + "Roll" + String(roll) + "Yaw " + String(yaw) + "Throttle" + String(rcthr));
+   
 
-		long pitch_output = pids[PID_PITCH_RATE].get_pid(gyroPitch - rcpit, 1);  
-		long roll_output = pids[PID_ROLL_RATE].get_pid(gyroRoll - rcroll, 1);  
-		long yaw_output = pids[PID_YAW_RATE].get_pid(gyroYaw - rcyaw, 1); 
-	
-		// is pilot asking for yaw change - if so feed directly to rate pid (overwriting yaw stab output)
-		if(abs(rcyaw ) > 5) {
-			yaw_stab_output = rcyaw;
-			yaw_target = yaw;   // remember this yaw for when pilot stops
-		}
 
-		// rate PIDS
-//    long pitch_output =  (long) constrain(pids[PID_PITCH_RATE].get_pid(pitch_stab_output - gyroPitch, 1), - 500, 500);  
-//    long roll_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(roll_stab_output - gyroRoll, 1), -500, 500);  
-//    long yaw_output =  (long) constrain(pids[PID_YAW_RATE].get_pid(yaw_stab_output - gyroYaw, 1), -500, 500);  
-		
-		motors.setSpeeds(rcthr - roll_output - pitch_output, 
-						rcthr + roll_output - pitch_output, 
-						rcthr + roll_output + pitch_output, 
-						rcthr - roll_output + pitch_output);
-		
-//    Add yaw support
+	if(rcthr > 1300) 
+	{   // **MINIMUM THROTTLE TO DO CORRECTIONS MAKE THIS 20pts ABOVE YOUR MIN THR STICK ** /
+
+
+    // our new stab pids
+    float pitch_stab_output = constrain(pids[PID_PITCH_STAB].get_pid((float)rcpit - pitch, 1), -250, 250); 
+    float roll_stab_output = constrain(pids[PID_ROLL_STAB].get_pid((float)rcroll - roll, 1), -250, 250);
+    float yaw_stab_output = constrain(pids[PID_YAW_STAB].get_pid(wrap_180(yaw_target - yaw), 1), -360, 360);
+    
+    // rate pids from earlier
+    long pitch_output =  (long) constrain(pids[PID_PITCH_RATE].get_pid(pitch_stab_output - gyroPitch, 1), - 500, 500);  
+    long roll_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(roll_stab_output - gyroRoll, 1), -500, 500);  
+    long yaw_output =  (long) constrain(pids[PID_YAW_RATE].get_pid(yaw_stab_output - gyroYaw, 1), -500, 500); 
+      
+    
+    
+    if(abs(rcyaw) > 5) {  // if pilot commanding yaw
+      yaw_stab_output = rcyaw;  // feed to rate controller (overwriting stab controller output)
+      yaw_target = yaw;         // update yaw target
+    }
+    
+    	
+
 		motors.setSpeeds(rcthr - roll_output - pitch_output - yaw_output, 
 						rcthr + roll_output - pitch_output + yaw_output, 
 						rcthr + roll_output + pitch_output - yaw_output, 
 						rcthr - roll_output + pitch_output + yaw_output);
+    Serial.println(String(rcthr - roll_output - pitch_output - yaw_output) + " " + String(rcthr + roll_output - pitch_output + yaw_output) + " " + String(rcthr + roll_output + pitch_output - yaw_output) + " " + String(rcthr - roll_output + pitch_output + yaw_output));
+//    Serial.println(String(roll_output) + " " + String(pitch_output) + " " + String(yaw_output));
 	} 
 	else 
-	{  // MOTORS OFF
-		motors.setAllSpeeds(1000); //not sure if 1000 is correct.
+	{ 
+	  // MOTORS OFF
+		motors.setAllSpeeds(0); //not sure if 1000 is correct.
 
 		// reset yaw target so we maintain this on takeoff
 		yaw_target = yaw;
