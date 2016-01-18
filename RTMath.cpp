@@ -417,3 +417,4 @@ void RTQuaternion::fromAngleVector(const RTFLOAT& angle, const RTVector3& vec)
     m_data[3] = vec.z() * sinHalfTheta;
 }
 #endif // #ifndef RTARDULINK_MODE
+

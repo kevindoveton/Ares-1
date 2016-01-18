@@ -9,62 +9,58 @@ bool Receiver :: init()
 	pinMode(rSwitchPin, INPUT);
 	pinMode(lSwitchPin, INPUT);
 
-	#ifdef DEBUG
-		Serial.println("Receiver :: init()");
-		Serial.println("Pins: \n Yaw Pin: " + String(yawPin) + ", Pitch Pin: " + String(pitchPin) + ", Throttle Pin: " + String(throttlePin) + ", Roll Pin: " + String(rollPin) + ", Right Switch Pin: " + String(rSwitchPin) + ", Left Switch Pin: " + String(lSwitchPin));
-	#endif
 
   return true;
 }
 
-void Receiver :: callibrate()
-{
-	#ifdef DEBUG
-		Serial.println("Started callibration");
-	#endif
-
-	unsigned long start = millis();
-
-	while (millis() - start <= 5000)
-	{
-		if (int currentYaw = readYaw() < minYaw)
-		{
-			minYaw = currentYaw;
-		}
-		else if (currentYaw > maxYaw)
-		{	
-			maxYaw = currentYaw;
-		}
-
-		if (int currentPitch = readPitch() < minPitch)
-		{
-			minPitch = currentPitch;
-		}
-		else if (currentPitch > maxPitch)
-		{	
-			maxPitch = currentPitch;
-		}
-
-		if (int currentThrottle = readThrottle() < minThrottle)
-		{	
-			minThrottle = currentThrottle;
-		}
-		else if (currentThrottle > maxThrottle)
-		{	
-			maxThrottle = currentThrottle;
-		}
-
-		if (int currentRoll = readRoll() < minRoll)
-		{	
-			minRoll = currentRoll;
-		}
-		else if (currentRoll > maxRoll)
-		{	
-			maxRoll = currentRoll;
-		}
-
-	}
-}
+//void Receiver :: callibrate()
+//{
+//	#ifdef DEBUG
+//		Serial.println("Started callibration");
+//	#endif
+//
+//	unsigned long start = millis();
+//
+//	while (millis() - start <= 5000)
+//	{
+//		if (int currentYaw = readYaw() < minYaw)
+//		{
+//			minYaw = currentYaw;
+//		}
+//		else if (currentYaw > maxYaw)
+//		{	
+//			maxYaw = currentYaw;
+//		}
+//
+//		if (int currentPitch = readPitch() < minPitch)
+//		{
+//			minPitch = currentPitch;
+//		}
+//		else if (currentPitch > maxPitch)
+//		{	
+//			maxPitch = currentPitch;
+//		}
+//
+//		if (int currentThrottle = readThrottle() < minThrottle)
+//		{	
+//			minThrottle = currentThrottle;
+//		}
+//		else if (currentThrottle > maxThrottle)
+//		{	
+//			maxThrottle = currentThrottle;
+//		}
+//
+//		if (int currentRoll = readRoll() < minRoll)
+//		{	
+//			minRoll = currentRoll;
+//		}
+//		else if (currentRoll > maxRoll)
+//		{	
+//			maxRoll = currentRoll;
+//		}
+//
+//	}
+//}
 
 unsigned long Receiver :: readYaw()
 {
@@ -135,3 +131,4 @@ unsigned long Receiver :: readPulse(int pin, int signal, unsigned long timeout)
 	}
 	return micros() - ptime;
 }
+

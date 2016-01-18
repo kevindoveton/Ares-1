@@ -5,7 +5,7 @@ class Motors {
 	public:
 		bool init();
 		void setSpeeds(float FL, float FR, float BR, float BL);
-   void setAllSpeeds(float speed);
+//   void setAllSpeeds(float speed);
 
 	private:
 		const int esc1Pin = 3;
@@ -20,3 +20,4 @@ class Motors {
 
 //   void setAllSpeed(int);
 };
+

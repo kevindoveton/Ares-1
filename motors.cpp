@@ -7,9 +7,7 @@ bool Motors :: init()
 	esc3.attach(esc1Pin); // FL
 	esc4.attach(esc3Pin); // BR
 
-	#ifdef DEBUG
-		Serial.println("Motors :: init()");
-	#endif
+
 
   return true;
 }
@@ -22,8 +20,9 @@ void Motors :: setSpeeds(float FL, float FR, float BR, float BL)
   esc4.write(BL); 
 }
 
-void Motors :: setAllSpeeds(float speed)
-{
-  setSpeeds(speed, speed, speed, speed);
-}
+//void Motors :: setAllSpeeds(float speed)
+//{
+//  setSpeeds(speed, speed, speed, speed);
+//}
+
 

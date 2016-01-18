@@ -24,31 +24,32 @@ PID pids[6];
 
 #define wrap_180(x) (x < -180 ? x+360 : (x > 180 ? x - 360: x))
 
-const float pi = 3.1415927;
-const float radConst = 57.2957795131;
+//const float pi = 3.1415927;
+//const float radConst = 57.2957795131;
 void setup() 
 { 
 	// This must be first
 	// Start Serial Monitor
-	#ifdef DEBUG
-		Serial.begin(9600);
-		Serial.println("started serial");
-	#endif
+
   Serial.begin(9600);
     Serial.println("started serial");
   
 	if (!receiver.init())
     Serial.println("receiver failed");
 
+
+  TWBR = ((F_CPU / 400000) - 16) / 2;//set the I2C speed to 400KHz
+  sensors.printTimer = millis();
+  sensors.timer = micros();
+  
   if (!sensors.init())
     Serial.println("Sensors failed");
 	
 	if (!motors.init())
     Serial.println("Motors failed");
 
-  motors.setAllSpeeds(0);
-  //receiver.callibrate();
-
+  motors.setSpeeds(0,0,0,0);
+  
 	pids[PID_PITCH_RATE].kP(0.7);
 	//  pids[PID_PITCH_RATE].kI(1);
 	pids[PID_PITCH_RATE].imax(50);
@@ -89,12 +90,12 @@ void loop()
  
 
 	float roll,pitch,yaw;  
-	RTVector3 sensorVector = sensors.readSensors(); //Not sure how to convert to euler...
-	//TODO: convert to degrees?
+	RTVector3 sensorVector = sensors.readSensors();
+ 
 	roll = sensorVector.x();
 	pitch = sensorVector.y();
 	yaw = sensorVector.z();
-//  motors.setAllSpeeds(rcthr);
+
 //  Serial.println("Pitch " + String(pitch) + "  Roll" + String(roll) + "  Yaw " + String(yaw));
 	
 
@@ -140,7 +141,7 @@ void loop()
 	else 
 	{ 
 	  // MOTORS OFF
-		motors.setAllSpeeds(0); //not sure if 1000 is correct.
+		motors.setSpeeds(0,0,0,0); //not sure if 1000 is correct.
 
 		// reset yaw target so we maintain this on takeoff
 		yaw_target = yaw;
@@ -151,11 +152,4 @@ void loop()
 	
 
 
-	//seems to be 1300 - 1700
-	#ifdef DEBUG
-		Serial.println("Yaw-chl 1:\tPitch-ch2:\tThrott-ch3:\tRoll-ch4:\t");
-		String outputString = String(rcthr, DEC) + "\t\t" + String(rcyaw, DEC) + "\t\t" + String(rcpit, DEC) + "\t\t" + String(rcroll, DEC);
-		Serial.print(outputString);
-		Serial.print("\n");
-	#endif
 }

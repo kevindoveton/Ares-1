@@ -11,7 +11,7 @@
 class Receiver {
 	public:
 		bool init();
-		void callibrate();
+//		void callibrate();
 
 		unsigned long readYaw();
 		unsigned long readPitch();
@@ -35,3 +35,4 @@ class Receiver {
 
 		unsigned long readPulse(int pin, int signal, unsigned long timeout);
 };
+

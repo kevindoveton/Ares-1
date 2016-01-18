@@ -159,3 +159,4 @@ private:
 #endif // #ifndef RTARDULINK_MODE
 
 #endif /* _RTMATH_H_ */
+
