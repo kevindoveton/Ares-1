@@ -1,14 +1,12 @@
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 #include "motors.h"
 
 bool Motors :: init()
 {
-	esc1.attach(esc2Pin); // FR
-	esc2.attach(esc4Pin); // BL
-	esc3.attach(esc1Pin); // FL
-	esc4.attach(esc3Pin); // BR
-
-
-
+	esc1.attach(esc1Pin); 
+	esc2.attach(esc2Pin); 
+	esc3.attach(esc3Pin); 
+	esc4.attach(esc4Pin); 
   return true;
 }
 
@@ -20,9 +18,18 @@ void Motors :: setSpeeds(float FL, float FR, float BR, float BL)
   esc4.write(BL); 
 }
 
-//void Motors :: setAllSpeeds(float speed)
-//{
-//  setSpeeds(speed, speed, speed, speed);
-//}
+bool Motors :: motorsArmed() 
+{
+   return motorArm;
+}
 
+void Motors :: armMotor()
+{
+  motorArm = true;
+}
+
+void Motors :: disarmMotor()
+{
+  motorArm = true;
+}
 

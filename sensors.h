@@ -1,15 +1,12 @@
-#include <LSM303.h>
-#include <L3G.h>
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 
 
-//#include "RTFusionRTQF.h"
 #include "RTMath.h"
 
 #include <Arduino.h>
 #include <Wire.h>
-
-#define RTARDULINK_MODE
-
+#include <LSM303.h> // Compass
+#include <L3G.h> // Gyro
 
 //Sensor Library
 
@@ -33,56 +30,43 @@
 class Sensors {
 public:
 	bool init();
+	
 	//Read RTMath.h for the RTVector3 def, basically: (scalar, x, y, z).
 	RTVector3 readSensors();
 	RTVector3 readGyro();
-//	RTVector3 readAcel();
-//	RTVector3 readCompass();
-  long timer, printTimer;
+
+	long timer, printTimer;
 
 private:
-//	RTFusionRTQF fusion;                                  // the fusion object
-  void IMUupdate(float *dt);
-  void AHRSupdate(float *dt);
-//  void GetEuler(void);
-  float fastAtan2( float y, float x);
-  float invSqrt(float number);
-  void Smoothing(float *raw, float *smooth);
-  
+	void IMUupdate(float *dt);
+	void AHRSupdate(float *dt);
+	
+	float fastAtan2( float y, float x);
+	float invSqrt(float number);
+	void Smoothing(float *raw, float *smooth);
+
 	LSM303 compass;
 	L3G gyro;
 
-  // Slerp power controls the fusion and can be between 0 and 1
-  // 0 means that only gyros are used, 1 means that only accels/compass are used
-  // In-between gives the fusion mix.
-//  const float slerp = 0.9;
-
 	void readGyro(RTVector3& gyr);
-//	void readCompass(RTVector3& acel, RTVector3& comp);
-  
-float G_Dt;
-int loopCount;
 
-float q0;
-float q1;
-float q2;
-float q3;
-float beta;
+	float G_Dt;
+	int loopCount;
 
-float magnitude;
-
-float pitch,roll,yaw;
-
-float gyroSumX,gyroSumY,gyroSumZ;
-float offSetX,offSetY,offSetZ;
-
-float floatMagX,floatMagY,floatMagZ;
-float floatAccX,floatAccY,floatAccZ;
-float smoothAccX,smoothAccY,smoothAccZ;
-float accToFilterX,accToFilterY,accToFilterZ;
-
-int i;
-
+	float q0;
+	float q1;
+	float q2;
+	float q3;
+	float beta;
+	float magnitude;
+	float pitch,roll,yaw;
+	float gyroSumX,gyroSumY,gyroSumZ;
+	float offSetX,offSetY,offSetZ;
+	float floatMagX,floatMagY,floatMagZ;
+	float floatAccX,floatAccY,floatAccZ;
+	float smoothAccX,smoothAccY,smoothAccZ;
+	float accToFilterX,accToFilterY,accToFilterZ;
+	int i;
 	unsigned long lastDisplay;
 	unsigned long lastRate;
 	int sampleCount;

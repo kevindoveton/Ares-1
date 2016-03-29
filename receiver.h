@@ -1,3 +1,4 @@
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 // RC Channel Assignments
 // 1 Yaw
 // 2 Pitch
@@ -11,8 +12,7 @@
 class Receiver {
 	public:
 		bool init();
-//		void callibrate();
-
+    bool armMotors();
 		unsigned long readYaw();
 		unsigned long readPitch();
 		unsigned long readThrottle();

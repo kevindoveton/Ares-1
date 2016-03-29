@@ -1,3 +1,4 @@
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 #include "receiver.h"
 
 bool Receiver :: init()
@@ -9,58 +10,14 @@ bool Receiver :: init()
 	pinMode(rSwitchPin, INPUT);
 	pinMode(lSwitchPin, INPUT);
 
-
-  return true;
+	return true;
 }
 
-//void Receiver :: callibrate()
-//{
-//	#ifdef DEBUG
-//		Serial.println("Started callibration");
-//	#endif
-//
-//	unsigned long start = millis();
-//
-//	while (millis() - start <= 5000)
-//	{
-//		if (int currentYaw = readYaw() < minYaw)
-//		{
-//			minYaw = currentYaw;
-//		}
-//		else if (currentYaw > maxYaw)
-//		{	
-//			maxYaw = currentYaw;
-//		}
-//
-//		if (int currentPitch = readPitch() < minPitch)
-//		{
-//			minPitch = currentPitch;
-//		}
-//		else if (currentPitch > maxPitch)
-//		{	
-//			maxPitch = currentPitch;
-//		}
-//
-//		if (int currentThrottle = readThrottle() < minThrottle)
-//		{	
-//			minThrottle = currentThrottle;
-//		}
-//		else if (currentThrottle > maxThrottle)
-//		{	
-//			maxThrottle = currentThrottle;
-//		}
-//
-//		if (int currentRoll = readRoll() < minRoll)
-//		{	
-//			minRoll = currentRoll;
-//		}
-//		else if (currentRoll > maxRoll)
-//		{	
-//			maxRoll = currentRoll;
-//		}
-//
-//	}
-//}
+bool Receiver :: armMotors() 
+{
+  
+  return true;  
+}
 
 unsigned long Receiver :: readYaw()
 {
@@ -112,7 +69,6 @@ unsigned long Receiver :: readPulse(int pin, int signal, unsigned long timeout)
 		if(current >= killTime){
  			return 0UL;
 		}
-
 	}
 
 	while(digitalRead(pin) != signal)
@@ -123,9 +79,10 @@ unsigned long Receiver :: readPulse(int pin, int signal, unsigned long timeout)
 		if(current >= killTime){
 			return 0UL;
 		}
-
 	}
+
 	ptime = micros();
+	
 	while(digitalRead(pin) == signal){
 		delayMicroseconds(4); 
 	}

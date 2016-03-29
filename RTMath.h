@@ -1,3 +1,4 @@
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 ////////////////////////////////////////////////////////////////////////////
 //
 //  This file is part of RTIMULib-Arduino
@@ -47,27 +48,27 @@ class RTVector3;
 class RTQuaternion;
 #endif
 
-class RTMath
-{
-public:
-#ifndef RTARDULINK_MODE
-    // convenient display routines
-
-    static void display(const char *label, RTVector3& vec);
-    static void displayDegrees(const char *label, RTVector3& vec);
-    static void displayRollPitchYaw(const char *label, RTVector3& vec);
-    static void display(const char *label, RTQuaternion& quat);
-
-    //  poseFromAccelMag generates pose Euler angles from measured settings
-
-    static RTVector3 poseFromAccelMag(const RTVector3& accel, const RTVector3& mag);
-
-    //  Takes signed 16 bit data from a char array and converts it to a vector of scaled RTFLOATs
-
-    static void convertToVector(unsigned char *rawData, RTVector3& vec, RTFLOAT scale, bool bigEndian);
-
-#endif // #ifndef RTARDULINK_MODE
-};
+//class RTMath
+//{
+//public:
+//#ifndef RTARDULINK_MODE
+//    // convenient display routines
+//
+//    static void display(const char *label, RTVector3& vec);
+//    static void displayDegrees(const char *label, RTVector3& vec);
+//    static void displayRollPitchYaw(const char *label, RTVector3& vec);
+//    static void display(const char *label, RTQuaternion& quat);
+//
+//    //  poseFromAccelMag generates pose Euler angles from measured settings
+//
+//    static RTVector3 poseFromAccelMag(const RTVector3& accel, const RTVector3& mag);
+//
+//    //  Takes signed 16 bit data from a char array and converts it to a vector of scaled RTFLOATs
+//
+//    static void convertToVector(unsigned char *rawData, RTVector3& vec, RTFLOAT scale, bool bigEndian);
+//
+//#endif // #ifndef RTARDULINK_MODE
+//};
 
 
 class RTVector3
@@ -95,68 +96,67 @@ public:
     inline void setData(const int i, RTFLOAT val) { m_data[i] = val; }
 
     #ifndef RTARDULINK_MODE
-    RTFLOAT length();
-    void normalize();
-
-    const char *display();
-    const char *displayDegrees();
-
-    static RTFLOAT dotProduct(const RTVector3& a, const RTVector3& b);
-    static void crossProduct(const RTVector3& a, const RTVector3& b, RTVector3& d);
-
-    void accelToEuler(RTVector3& rollPitchYaw) const;
-    void accelToQuaternion(RTQuaternion& qPose) const;
+//    RTFLOAT length();
+//    void normalize();
+//
+//    const char *display();
+//    const char *displayDegrees();
+//
+//    static RTFLOAT dotProduct(const RTVector3& a, const RTVector3& b);
+//    static void crossProduct(const RTVector3& a, const RTVector3& b, RTVector3& d);
+//
+//    void accelToEuler(RTVector3& rollPitchYaw) const;
+//    void accelToQuaternion(RTQuaternion& qPose) const;
 #endif // #ifndef RTARDULINK_MODE
 
 private:
     RTFLOAT m_data[3];
 };
-
-#ifndef RTARDULINK_MODE
-class RTQuaternion
-{
-public:
-    RTQuaternion();
-    RTQuaternion(RTFLOAT scalar, RTFLOAT x, RTFLOAT y, RTFLOAT z);
-
-    RTQuaternion& operator +=(const RTQuaternion& quat);
-    RTQuaternion& operator -=(const RTQuaternion& quat);
-    RTQuaternion& operator *=(const RTQuaternion& qb);
-    RTQuaternion& operator *=(const RTFLOAT val);
-    RTQuaternion& operator -=(const RTFLOAT val);
-
-    RTQuaternion& operator =(const RTQuaternion& quat);
-    const RTQuaternion operator *(const RTQuaternion& qb) const;
-    const RTQuaternion operator *(const RTFLOAT val) const;
-    const RTQuaternion operator -(const RTQuaternion& qb) const;
-    const RTQuaternion operator -(const RTFLOAT val) const;
-
-    void normalize();
-    void toEuler(RTVector3& vec);
-    void fromEuler(RTVector3& vec);
-    RTQuaternion conjugate() const;
-    void toAngleVector(RTFLOAT& angle, RTVector3& vec);
-    void fromAngleVector(const RTFLOAT& angle, const RTVector3& vec);
-
-    void zero();
-    const char *display();
-
-    inline RTFLOAT scalar() const { return m_data[0]; }
-    inline RTFLOAT x() const { return m_data[1]; }
-    inline RTFLOAT y() const { return m_data[2]; }
-    inline RTFLOAT z() const { return m_data[3]; }
-    inline RTFLOAT data(const int i) const { return m_data[i]; }
-
-    inline void setScalar(const RTFLOAT val) { m_data[0] = val; }
-    inline void setX(const RTFLOAT val) { m_data[1] = val; }
-    inline void setY(const RTFLOAT val) { m_data[2] = val; }
-    inline void setZ(const RTFLOAT val) { m_data[3] = val; }
-    inline void setData(const int i, RTFLOAT val) { m_data[i] = val; }
-
-private:
-    RTFLOAT m_data[4];
-};
-#endif // #ifndef RTARDULINK_MODE
-
+//
+//#ifndef RTARDULINK_MODE
+//class RTQuaternion
+//{
+//public:
+//    RTQuaternion();
+//    RTQuaternion(RTFLOAT scalar, RTFLOAT x, RTFLOAT y, RTFLOAT z);
+//
+//    RTQuaternion& operator +=(const RTQuaternion& quat);
+//    RTQuaternion& operator -=(const RTQuaternion& quat);
+//    RTQuaternion& operator *=(const RTQuaternion& qb);
+//    RTQuaternion& operator *=(const RTFLOAT val);
+//    RTQuaternion& operator -=(const RTFLOAT val);
+//
+//    RTQuaternion& operator =(const RTQuaternion& quat);
+//    const RTQuaternion operator *(const RTQuaternion& qb) const;
+//    const RTQuaternion operator *(const RTFLOAT val) const;
+//    const RTQuaternion operator -(const RTQuaternion& qb) const;
+//    const RTQuaternion operator -(const RTFLOAT val) const;
+//
+//    void normalize();
+//    void toEuler(RTVector3& vec);
+//    void fromEuler(RTVector3& vec);
+//    RTQuaternion conjugate() const;
+//    void toAngleVector(RTFLOAT& angle, RTVector3& vec);
+//    void fromAngleVector(const RTFLOAT& angle, const RTVector3& vec);
+//
+//    void zero();
+//    const char *display();
+//
+//    inline RTFLOAT scalar() const { return m_data[0]; }
+//    inline RTFLOAT x() const { return m_data[1]; }
+//    inline RTFLOAT y() const { return m_data[2]; }
+//    inline RTFLOAT z() const { return m_data[3]; }
+//    inline RTFLOAT data(const int i) const { return m_data[i]; }
+//
+//    inline void setScalar(const RTFLOAT val) { m_data[0] = val; }
+//    inline void setX(const RTFLOAT val) { m_data[1] = val; }
+//    inline void setY(const RTFLOAT val) { m_data[2] = val; }
+//    inline void setZ(const RTFLOAT val) { m_data[3] = val; }
+//    inline void setData(const int i, RTFLOAT val) { m_data[i] = val; }
+//
+//private:
+//    RTFLOAT m_data[4];
+//};
+//#endif // #ifndef RTARDULINK_MODE
+//
 #endif /* _RTMATH_H_ */
-

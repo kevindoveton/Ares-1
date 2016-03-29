@@ -1,3 +1,4 @@
+// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 // Ares 1
 // 2015 Kevin Doveton // Lewis Daly
 
@@ -22,17 +23,24 @@ PID pids[6];
 #define PID_YAW_RATE 4
 #define PID_YAW_STAB 5
 
+#define RC_THR_MIN   1116
+#define RC_YAW_MIN   1020 
+#define RC_YAW_MAX   1828
+#define RC_PIT_MIN   1096
+#define RC_PIT_MAX   1748
+#define RC_ROL_MIN   1044
+#define RC_ROL_MAX   1788
+
+
 #define wrap_180(x) (x < -180 ? x+360 : (x > 180 ? x - 360: x))
 
-//const float pi = 3.1415927;
-//const float radConst = 57.2957795131;
 void setup() 
 { 
 	// This must be first
 	// Start Serial Monitor
 
-  Serial.begin(9600);
-    Serial.println("started serial");
+//  Serial.begin(9600);
+//  Serial.println("started serial");
   
 	if (!receiver.init())
     Serial.println("receiver failed");
@@ -65,91 +73,112 @@ void setup()
 	pids[PID_PITCH_STAB].kP(4.5);
 	pids[PID_ROLL_STAB].kP(4.5);
 	pids[PID_YAW_STAB].kP(10);
+
+  
+    // read high
+//  while()
+  {
+    receiver.maxYaw = max(receiver.readYaw(), receiver.maxYaw);
+    receiver.maxPitch = max(receiver.readPitch(), receiver.maxPitch);
+    receiver.maxThrottle = max(receiver.readThrottle(), receiver.maxThrottle);
+    receiver.maxRoll = max(receiver.readRoll(), receiver.maxRoll);
+  }
+//  while()
+  {
+    receiver.minYaw = min(receiver.readYaw(), receiver.minYaw);
+    receiver.minPitch = min(receiver.readPitch(), receiver.minPitch);
+    receiver.minThrottle = min(receiver.readThrottle(), receiver.minThrottle);
+    receiver.minRoll = min(receiver.readRoll(), receiver.minRoll);
+  }
+  motors.armMotor();
 }
 
 int rev = 0;
  
 void loop() 
 {
-	static float yaw_target = 0;  
-
-	// Get Pulse Width of all Channels
-	ch1 = receiver.readYaw();
-	ch2 = receiver.readPitch();
-	ch3 = receiver.readThrottle();
-	ch4 = receiver.readRoll();
-
-
+  static float yaw_target = 0;
+  // Get Pulse Width of all Channels
+    ch1 = receiver.readYaw();
+    ch2 = receiver.readPitch();
+    ch3 = receiver.readThrottle();
+    ch4 = receiver.readRoll();
+  //  Serial.println(String(ch1) + " " + String(ch2) + " " + String(ch3) + " " + String(ch4));
   
-	long rcthr, rcyaw, rcpit, rcroll;   // Variables to store rc input
-	rcthr = ch3;
-	rcyaw = map(ch1, 1200, 2000, -150, 150);
-	rcpit = map(ch2, 1200, 2000, -45, 45);
-	rcroll = map(ch4, 1200, 2000, -45, 45);
-
- 
-
-	float roll,pitch,yaw;  
-	RTVector3 sensorVector = sensors.readSensors();
- 
-	roll = sensorVector.x();
-	pitch = sensorVector.y();
-	yaw = sensorVector.z();
-
-//  Serial.println("Pitch " + String(pitch) + "  Roll" + String(roll) + "  Yaw " + String(yaw));
-	
-
-	RTVector3 gyroVector = sensors.readGyro();
-	float gyroPitch = gyroVector.y(), gyroRoll = gyroVector.x(), gyroYaw = gyroVector.z(); //convert to deg?
- 
-
- 
-  //Serial.println("Pitch " + String(gyroPitch) + "Roll" + String(roll) + "Yaw " + String(yaw) + "Throttle" + String(rcthr));
+    
+    long rcthr, rcyaw, rcpit, rcroll;   // Variables to store rc input
+    rcthr = ch3;
+    rcyaw = map(ch1, receiver.minYaw, receiver.maxYaw, -150, 150);
+    rcpit = map(ch2, receiver.minPitch, receiver.maxPitch, 45, -45);
+    rcroll = map(ch4, receiver.minRoll, receiver.maxRoll, -45, 45);
+  //  Serial.println("Thr: " + String(rcthr) + " Yaw: " + String(rcyaw) + " Pit: " + String(rcpit) + " Roll: " + String(rcroll));
+  
+    float roll,pitch,yaw;  
+    RTVector3 sensorVector = sensors.readSensors();
    
-
-
-	if(rcthr > 1300) 
-	{   // **MINIMUM THROTTLE TO DO CORRECTIONS MAKE THIS 20pts ABOVE YOUR MIN THR STICK ** /
-
-
-    // our new stab pids
-    float pitch_stab_output = constrain(pids[PID_PITCH_STAB].get_pid((float)rcpit - pitch, 1), -250, 250); 
-    float roll_stab_output = constrain(pids[PID_ROLL_STAB].get_pid((float)rcroll - roll, 1), -250, 250);
-    float yaw_stab_output = constrain(pids[PID_YAW_STAB].get_pid(wrap_180(yaw_target - yaw), 1), -360, 360);
+    roll = sensorVector.y();
+    pitch = sensorVector.x();
+    yaw = sensorVector.z();
+  //  Serial.println("Pitch " + String(roll) + "  Roll" + String(pitch) + "  Yaw " + String(yaw));
     
-    // rate pids from earlier
-    long pitch_output =  (long) constrain(pids[PID_PITCH_RATE].get_pid(pitch_stab_output - gyroPitch, 1), - 500, 500);  
-    long roll_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(roll_stab_output - gyroRoll, 1), -500, 500);  
-    long yaw_output =  (long) constrain(pids[PID_YAW_RATE].get_pid(yaw_stab_output - gyroYaw, 1), -500, 500); 
+    RTVector3 gyroVector = sensors.readGyro();
+    float gyroPitch = gyroVector.x(), gyroRoll = gyroVector.y(), gyroYaw = gyroVector.z(); //convert to deg??
+  //  Serial.println(String(ceil(gyroRoll)) + " " + String(ceil(gyroPitch)) + " " +String(ceil(gyroYaw)));
+  if (motors.motorsArmed())
+  {  
+  	if(rcthr > receiver.minThrottle+50) 
+  	{   // **MINIMUM THROTTLE TO DO CORRECTIONS MAKE THIS 20pts ABOVE YOUR MIN THR STICK ** /
+        // Minimum is about 1204
+  
+  
+      // Stablise PIDS
+      float pitch_stab_output = constrain(pids[PID_PITCH_STAB].get_pid((float)rcpit - pitch, 1), -250, 250); 
+      float roll_stab_output = constrain(pids[PID_ROLL_STAB].get_pid((float)rcroll - roll, 1), -250, 250);
+      float yaw_stab_output = constrain(pids[PID_YAW_STAB].get_pid(wrap_180(yaw_target - yaw), 1), -360, 360);
+  //    Serial.println(String(roll_stab_output) + " " + String(pitch_stab_output) + " " + String(yaw_stab_output));
       
-    
-    
-    if(abs(rcyaw) > 5) {  // if pilot commanding yaw
-      yaw_stab_output = rcyaw;  // feed to rate controller (overwriting stab controller output)
-      yaw_target = yaw;         // update yaw target
-    }
-    
-    	
-
-		motors.setSpeeds(rcthr - roll_output - pitch_output - yaw_output, 
-						rcthr + roll_output - pitch_output + yaw_output, 
-						rcthr + roll_output + pitch_output - yaw_output, 
-						rcthr - roll_output + pitch_output + yaw_output);
-    Serial.println(String(rcthr - roll_output - pitch_output - yaw_output) + " " + String(rcthr + roll_output - pitch_output + yaw_output) + " " + String(rcthr + roll_output + pitch_output - yaw_output) + " " + String(rcthr - roll_output + pitch_output + yaw_output));
-//    Serial.println(String(roll_output) + " " + String(pitch_output) + " " + String(yaw_output));
-	} 
-	else 
-	{ 
-	  // MOTORS OFF
-		motors.setSpeeds(0,0,0,0); //not sure if 1000 is correct.
-
-		// reset yaw target so we maintain this on takeoff
-		yaw_target = yaw;
-		
-		for(int i=0; i<6; i++) // reset PID integrals whilst on the ground
-			pids[i].reset_I();
-	}
-	
-
-
+      // is pilot asking for yaw change - if so feed directly to rate pid (overwriting yaw stab output)
+      if(abs(rcyaw ) > 5) {
+        yaw_stab_output = rcyaw;
+        yaw_target = yaw;   // remember this yaw for when pilot stops
+      }
+      
+      // rate PIDS
+      long pitch_output =  (long) constrain(pids[PID_PITCH_RATE].get_pid(pitch_stab_output - gyroPitch, 1), - 500, 500);  
+      long roll_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(roll_stab_output - gyroRoll, 1), -500, 500);  
+      long yaw_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(yaw_stab_output - gyroYaw, 1), -500, 500);  
+      
+      	
+      float FL = rcthr + roll_output + pitch_output - yaw_output;
+      float BL = rcthr + roll_output - pitch_output + yaw_output;    
+      float FR = rcthr - roll_output + pitch_output + yaw_output;
+      float BR = rcthr - roll_output - pitch_output - yaw_output;
+  		motors.setSpeeds(FL, FR, BR, BL);
+  //    Serial.println("FL: " + String(FL) + " FR: " + String(FR) + " BR: " + String(BR) + " BL: " + String(BL));
+  //    Serial.println(String(roll_output) + " " + String(pitch_output) + " " + String(yaw_output));
+      
+  	} 
+  	else 
+  	{
+  	  // MOTORS OFF
+  		motors.setSpeeds(1100,1100,1100,1100); //not sure if 1000 is correct.
+  
+  		// reset yaw target so we maintain this on takeoff
+  		yaw_target = yaw;
+  		
+  		for(int i=0; i<6; i++) // reset PID integrals whilst on the ground
+  			pids[i].reset_I();
+  	}
+  }
+  else
+  {
+     // MOTORS OFF
+      motors.setSpeeds(0,0,0,0); //not sure if 1000 is correct.
+  
+      // reset yaw target so we maintain this on takeoff
+      yaw_target = yaw;
+      
+      for(int i=0; i<6; i++) // reset PID integrals whilst on the ground
+        pids[i].reset_I();
+  }
 }
