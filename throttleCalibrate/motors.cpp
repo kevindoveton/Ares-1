@@ -6,9 +6,8 @@ bool Motors :: init()
 	esc1.attach(esc1Pin); 
 	esc2.attach(esc2Pin); 
 	esc3.attach(esc3Pin); 
-	esc4.attach(esc4Pin); 
-
-  return true;
+	esc4.attach(esc4Pin);
+    return true;
 }
 
 void Motors :: setSpeeds(float FL, float FR, float BR, float BL)

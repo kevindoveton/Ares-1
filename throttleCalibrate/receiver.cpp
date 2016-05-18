@@ -13,10 +13,10 @@ bool Receiver :: init()
 	return true;
 }
 
-bool Receiver :: armMotors()
+bool Receiver :: armMotors() 
 {
-
-  return true;
+  
+  return true;  
 }
 
 unsigned long Receiver :: readYaw()
@@ -64,7 +64,7 @@ unsigned long Receiver :: readPulse(int pin, int signal, unsigned long timeout)
 
 	while(digitalRead(pin) == signal)
 	{
-		delayMicroseconds(4);
+		delayMicroseconds(4); 
 		current = micros();
 
 		if(current >= killTime){
@@ -75,17 +75,18 @@ unsigned long Receiver :: readPulse(int pin, int signal, unsigned long timeout)
 	while(digitalRead(pin) != signal)
 	{
 		delayMicroseconds(4);
-		current = micros();
-
+		current = micros(); 
+		
 		if(current >= killTime){
 			return 0UL;
 		}
 	}
 
 	ptime = micros();
-
+	
 	while(digitalRead(pin) == signal){
-		delayMicroseconds(4);
+		delayMicroseconds(4); 
 	}
 	return micros() - ptime;
 }
+
