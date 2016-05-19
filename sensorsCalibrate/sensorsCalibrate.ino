@@ -8,22 +8,18 @@
 // Global Variables
 Sensors sensors;
 
-
 void setup()
 {
-	// This must be first
 	// Start Serial Monitor
 	Serial.begin(9600);
 
 	// Initiate Sensors
 	sensors.init();
-
 }
 
 void loop()
 {
-	RTVector3 sen = sensors.readSensors();
-	Serial.println("Fused   \t" + String(sen.x()) + " " + String(sen.y()) + " " + String(sen.z()));
-
-	// delay(500);
+	sensors.readSensors();
 }
+
+// !,AN:-23,3,-17,-1,-11,257,0.18,-1.07,1.87
