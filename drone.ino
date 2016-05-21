@@ -2,6 +2,27 @@
 // Ares 1
 // 2015-2016 Kevin Doveton // Lewis Daly
 
+/* --------  CONFIG  --------*/
+#define stabPitchP	1.0
+#define stabPitchI	0.5
+#define stabPitchD	0
+#define stabRollP	1.0
+#define stabRollI	0.5
+#define stabRollD	0
+#define stabYawP	1.0
+#define stabYawI	0
+#define stabYawD	0
+
+#define ratePitchP	0.4
+#define ratePitchI	0
+#define ratePitchD	0
+#define rateRollP	0.4
+#define rateRollI	0
+#define rateRollD	0
+#define rateYawP	0.5
+#define rateYawI	0
+#define rateYawD	0
+
 #include "receiver.h"
 #include "motors.h"
 #include "MinIMU9AHRS.h"
@@ -51,29 +72,34 @@ void setup()
 	// if (!sensors.init())
 		// Serial.println("Sensors failed");
 
-	pids[PID_PITCH_RATE].kP(0.5);
-	// pids[PID_PITCH_RATE].kI(1);
+	// Rate PIDS
+	pids[PID_PITCH_RATE].kP(ratePitchP);
+	pids[PID_PITCH_RATE].kI(ratePitchI);
+	pids[PID_PITCH_RATE].kD(ratePitchD);
 	pids[PID_PITCH_RATE].imax(50);
 
-	pids[PID_ROLL_RATE].kP(0.5);
-	// pids[PID_ROLL_RATE].kI(1);
+	pids[PID_ROLL_RATE].kP(rateRollP);
+	pids[PID_ROLL_RATE].kI(rateRollI);
+	pids[PID_ROLL_RATE].kD(rateRollD);
 	pids[PID_ROLL_RATE].imax(50);
 
-	pids[PID_YAW_RATE].kP(0.25);
-	// pids[PID_YAW_RATE].kI(1);
+	pids[PID_YAW_RATE].kP(rateYawP);
+	pids[PID_YAW_RATE].kI(rateYawI);
+	pids[PID_YAW_RATE].kD(rateYawD);
 	pids[PID_YAW_RATE].imax(8.0);
 
-	pids[PID_PITCH_STAB].kP(0.5);
-	pids[PID_ROLL_STAB].kP(0.5);
-	pids[PID_YAW_STAB].kP(10);
+	// Stabilising PIDS
+	pids[PID_PITCH_STAB].kP(stabRollP);
+	pids[PID_ROLL_STAB].kP(stabRollP);
+	pids[PID_YAW_STAB].kP(stabRollP);
 
 
 	// read high
 	while(!motors.motorsArmed())
 	{
 		// Arming Sequence
-		// Both Sticks in the top right position
-		// Both Sticks in the bottom left position
+		// Both Sticks in the top inwards position
+		// Both Sticks in the bottom outwards position
 		// Serial.println("!motorsArmed");
 		int timer = 0;
 		int startTime = millis();
@@ -146,7 +172,7 @@ void loop()
 
 	long rcthr, rcyaw, rcpit, rcroll;   // Variables to store rc input
 	rcthr = ch3;
-	rcyaw = map(ch1, receiver.minYaw, receiver.maxYaw, 150, -150);
+	rcyaw = map(ch1, receiver.minYaw, receiver.maxYaw, -150, 150);
 	rcpit = map(ch2, receiver.minPitch, receiver.maxPitch, 45, -45);
 	rcroll = map(ch4, receiver.minRoll, receiver.maxRoll, -45, 45);
 	// Serial.println("Thr: " + String(rcthr) + " Yaw: " + String(rcyaw) + " Pit: " + String(rcpit) + " Roll: " + String(rcroll));
@@ -184,9 +210,9 @@ void loop()
 			// long pitch_output =  (long) constrain(pids[PID_PITCH_RATE].get_pid(pitch_stab_output - gyroPitch, 1), -500, 500);
 			// long roll_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(roll_stab_output - gyroRoll, 1), -500, 500);
 			// long yaw_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(yaw_stab_output - gyroYaw, 1), -500, 500);
-			long pitch_output =  (long) constrain(pids[PID_PITCH_RATE].get_pid(gyroPitch - rcpit, 1), -500, 500);
-			long roll_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(gyroRoll - rcroll, 1), -500, 500);
-			long yaw_output =  (long) constrain(pids[PID_ROLL_RATE].get_pid(gyroYaw - rcyaw, 1), -500, 500);
+			long pitch_output = (long) constrain(pids[PID_PITCH_RATE].get_pid(gyroPitch - rcpit, 1), -500, 500);
+			long roll_output = (long) constrain(pids[PID_ROLL_RATE].get_pid(gyroRoll - rcroll, 1), -500, 500);
+			long yaw_output = (long) constrain(pids[PID_YAW_RATE].get_pid(gyroYaw - rcyaw, 1), -500, 500);
 
 
 			// Motor Speeds
