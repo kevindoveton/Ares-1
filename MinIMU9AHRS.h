@@ -68,12 +68,12 @@ with MinIMU-9-Arduino-AHRS. If not, see <http://www.gnu.org/licenses/>.
 
 // LSM303 magnetometer calibration constants; use the Calibrate example from
 // the Pololu LSM303 library to find the right values for your board
-#define M_X_MIN -1000
-#define M_Y_MIN -1000
-#define M_Z_MIN -1000
-#define M_X_MAX +1000
-#define M_Y_MAX +1000
-#define M_Z_MAX +1000
+#define M_X_MIN -5649
+#define M_Y_MIN -3877
+#define M_Z_MIN -1468
+#define M_X_MAX +463
+#define M_Y_MAX +3398
+#define M_Z_MAX +6120
 
 #define Kp_ROLLPITCH 0.02
 #define Ki_ROLLPITCH 0.00002
