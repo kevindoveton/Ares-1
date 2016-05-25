@@ -1,32 +1,33 @@
 // -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: t -*-
 // Ares 1
-// 2015-2016 Kevin Doveton // Lewis Daly
+// 2015 - 2016, Kevin Doveton, Lewis Daly
 
 /* --------  CONFIG  --------*/
-#define stabPitchP	0.5
+#define ACROMODE 1 // set to 1 for acro mode, 0 for stabilise
+
+#define stabPitchP	2.5
 #define stabPitchI	0
 #define stabPitchD	0
-#define stabRollP	0.5
+#define stabRollP	2.5
 #define stabRollI	0
 #define stabRollD	0
-#define stabYawP	0.5
+#define stabYawP	2.5
 #define stabYawI	0
 #define stabYawD	0
 
-#define ratePitchP	0.25
-#define ratePitchI	0.2
+#define ratePitchP	0.35
+#define ratePitchI	0
 #define ratePitchD	0
-#define rateRollP	0.25
-#define rateRollI	0.2
+#define rateRollP	0.35
+#define rateRollI	0
 #define rateRollD	0
-#define rateYawP	0.25
-#define rateYawI	0.2
+#define rateYawP	0.2
+#define rateYawI	0
 #define rateYawD	0
 
 #include "receiver.h"
 #include "motors.h"
 #include "MinIMU9AHRS.h"
-// #include "pid.h"
 #include "PID_v1.h"
 #include <Wire.h>
 
@@ -45,12 +46,12 @@ double pitch_stab_input, roll_stab_input, yaw_stab_input;
 double pitch_rate_error, roll_rate_error, yaw_rate_error;
 double pitch_stab_error, roll_stab_error, yaw_stab_error;
 
-PID PID_PITCH_RATE(&pitch_rate_input, &pitch_rate_output, &pitch_rate_error, ratePitchP, ratePitchI, ratePitchD, DIRECT);
-PID PID_ROLL_RATE(&roll_rate_input, &roll_rate_output, &roll_rate_error, rateRollP, rateRollI, rateRollD, DIRECT);
-PID PID_YAW_RATE(&yaw_rate_input, &yaw_rate_output, &yaw_rate_error, rateYawP, rateYawI, rateYawD, DIRECT);
-PID PID_PITCH_STAB(&pitch_stab_input, &pitch_stab_output, &pitch_stab_error, stabPitchP, stabPitchI, stabPitchD, REVERSE);
-PID PID_ROLL_STAB(&roll_stab_input, &roll_stab_output, &roll_stab_error, stabRollP, stabRollI, stabRollD, REVERSE);
-PID PID_YAW_STAB(&yaw_stab_input, &yaw_stab_output, &yaw_stab_error, stabYawP, stabYawI, stabYawD, REVERSE);
+PID PID_PITCH_RATE(&pitch_rate_input, &pitch_rate_output, &pitch_rate_error, ratePitchP, ratePitchI, ratePitchD, REVERSE);
+PID PID_ROLL_RATE(&roll_rate_input, &roll_rate_output, &roll_rate_error, rateRollP, rateRollI, rateRollD, REVERSE);
+PID PID_YAW_RATE(&yaw_rate_input, &yaw_rate_output, &yaw_rate_error, rateYawP, rateYawI, rateYawD, REVERSE);
+PID PID_PITCH_STAB(&pitch_stab_input, &pitch_stab_output, &pitch_stab_error, stabPitchP, stabPitchI, stabPitchD, DIRECT);
+PID PID_ROLL_STAB(&roll_stab_input, &roll_stab_output, &roll_stab_error, stabRollP, stabRollI, stabRollD, DIRECT);
+PID PID_YAW_STAB(&yaw_stab_input, &yaw_stab_output, &yaw_stab_error, stabYawP, stabYawI, stabYawD, DIRECT);
 
 #define wrap_180(x) (x < -180 ? x+360 : (x > 180 ? x - 360: x))
 // Wrap 180 - Contain results within -180 and +180
@@ -77,6 +78,7 @@ void setup()
 	PID_PITCH_STAB.SetMode(AUTOMATIC);
 	PID_ROLL_STAB.SetMode(AUTOMATIC);
 	PID_YAW_STAB.SetMode(AUTOMATIC);
+
 	// Set PID limits
 	PID_PITCH_STAB.SetOutputLimits(-250, 250);
 	PID_ROLL_STAB.SetOutputLimits(-250, 250);
@@ -85,12 +87,12 @@ void setup()
 	PID_ROLL_RATE.SetOutputLimits(-500, 500);
 	PID_YAW_RATE.SetOutputLimits(-500, 500);
 
-	PID_PITCH_STAB.SetOutputLimits(-250, 250);
-	PID_ROLL_STAB.SetOutputLimits(-250, 250);
-	PID_YAW_STAB.SetOutputLimits(-360, 360);
-	PID_PITCH_RATE.SetOutputLimits(-500, 500);
-	PID_ROLL_RATE.SetOutputLimits(-500, 500);
-	PID_YAW_RATE.SetOutputLimits(-500, 500);
+	PID_PITCH_STAB.SetSampleTime(1);
+	PID_ROLL_STAB.SetSampleTime(1);
+	PID_YAW_STAB.SetSampleTime(1);
+	PID_PITCH_RATE.SetSampleTime(1);
+	PID_ROLL_RATE.SetSampleTime(1);
+	PID_YAW_RATE.SetSampleTime(1);
 
 	// read high
 	while(!motors.motorsArmed())
@@ -206,26 +208,31 @@ void loop()
 		if (rcthr > receiver.minThrottle + 20) // throttle above 0, motors ARMED
 		{
 			// Stablise PIDS
-			pitch_stab_output = rcpit - pitch;
-			roll_stab_output = rcroll - roll;
-			yaw_stab_output = wrap_180(yaw_target - yaw);
+			#if ACROMODE == 0
+				pitch_stab_output = rcpit - pitch;
+				roll_stab_output = rcroll - roll;
+				yaw_stab_output = wrap_180(yaw_target - yaw);
 
-			PID_PITCH_STAB.Compute();
-			PID_ROLL_STAB.Compute();
-			PID_YAW_STAB.Compute();
+				PID_PITCH_STAB.Compute();
+				PID_ROLL_STAB.Compute();
+				PID_YAW_STAB.Compute();
 
-			if(abs(rcyaw ) > 5) {
-				yaw_stab_output = rcyaw;
-				yaw_target = yaw;   // remember this yaw for when pilot stops
-			}
+				if(abs(rcyaw ) > 5) {
+					yaw_stab_output = rcyaw;
+					yaw_target = yaw;   // remember this yaw for when pilot stops
+				}
 
-			pitch_rate_input = double(pitch_stab_output - gyroPitch);
-			roll_rate_input = double(roll_stab_output - gyroRoll);
-			yaw_rate_input = double(yaw_stab_output - gyroYaw);
+				pitch_rate_input = double(pitch_stab_output - gyroPitch);
+				roll_rate_input = double(roll_stab_output - gyroRoll);
+				yaw_rate_input = double(yaw_stab_output - gyroYaw);
+			#endif
 
-			// pitch_rate_input = (float)gyroPitch - rcpit;
-			// roll_rate_input = (float)gyroRoll - rcroll;
-			// yaw_rate_input = (float)gyroYaw - rcyaw;
+			// ACRO Pids
+			#if ACROMODE == 1
+				pitch_rate_input = (float)gyroPitch - rcpit;
+				roll_rate_input = (float)gyroRoll - rcroll;
+				yaw_rate_input = (float)gyroYaw - rcyaw;
+			#endif
 
 			PID_PITCH_RATE.Compute();
 			PID_ROLL_RATE.Compute();
@@ -242,6 +249,62 @@ void loop()
 			float BL = rcthr - roll_output + pitch_output + yaw_output;
 			float FR = rcthr + roll_output - pitch_output + yaw_output;
 			float BR = rcthr + roll_output + pitch_output - yaw_output;
+
+			// Correction
+			// -------------------------------
+			// If one of the motors is above the max callibrated value it won't be able to
+			// speed up any more.. this will stop it being able to correct the drone
+			// -------------------------------
+			// Perform a series of checks to see if any one motor is above the max.
+			// if it is then set an error equal to the motor subtract max throttle,
+			// and set the (float) maxMotor as that motor. If there is an error set at the
+			// end, find the ratio of current motor to maxMotor and multiply by error.
+			// the highest motor will equal the maxThrottle value and the others will be
+			// proportional to their original value.
+			float error = 0;
+			float maxMotor = 0;
+
+			if (FL > receiver.maxThrottle)
+			{
+				error = FL - receiver.maxThrottle; // difference
+				maxMotor = FL;
+			}
+
+			if (BL > receiver.maxThrottle)
+			{
+				if ((BL - receiver.maxThrottle) > error)
+				{
+					error = BL - receiver.maxThrottle;
+					maxMotor = BL;
+				}
+			}
+
+			if (FR > receiver.maxThrottle)
+			{
+				if ((FR - receiver.maxThrottle) > error)
+				{
+					error = FR - receiver.maxThrottle;
+					maxMotor = FR;
+				}
+			}
+
+			if (BR > receiver.maxThrottle)
+			{
+				if ((BR - receiver.maxThrottle) > error)
+				{
+					error = BR - receiver.maxThrottle;
+					maxMotor = BR;
+				}
+			}
+
+			if (error != 0)
+			{
+				FL -= ((FL/maxMotor) * error); // get the ratio of motor to max and times by error
+				BL -= ((BL/maxMotor) * error);
+				FR -= ((FR/maxMotor) * error);
+				BR -= ((BR/maxMotor) * error);
+			}
+
 			motors.setSpeeds(FL, FR, BR, BL); // Set Motor Speeds
 
 
@@ -255,6 +318,8 @@ void loop()
 			// Serial.println("FL: " + String(FL) + " BR: " + String(BR));
 			// Serial.println(String(roll_output) + " " + String(pitch_output) + " " + String(yaw_output));
 			// Serial.println(String(roll_stab_output) + " " + String(pitch_stab_output) + " " + String(yaw_stab_output));
+
+			// -----------------------------------------
 		}
 		else // throttle at 0, motors ARMED
 		{
@@ -264,7 +329,6 @@ void loop()
 			yaw_target = yaw;
 
 			// reset PID integrals whilst on the ground
-
 		}
 	}
 	else // Throttle at 0, motors DISARMED
@@ -274,7 +338,5 @@ void loop()
 
 			// reset yaw target so we maintain this on takeoff
 			yaw_target = yaw;
-
-
 	}
 }
